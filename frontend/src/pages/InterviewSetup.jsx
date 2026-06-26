@@ -275,17 +275,17 @@ function InterviewSetup() {
               <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
                 {[
                   {
-                    icon: '🎯',
+                    icon: '',
                     title: 'Personalized',
                     desc: 'Questions tailored to your specific role and experience level'
                   },
                   {
-                    icon: '⚡',
+                    icon: '',
                     title: 'AI-Powered',
                     desc: 'Advanced AI generates relevant, challenging questions'
                   },
                   {
-                    icon: '📊',
+                    icon: '',
                     title: 'Realistic',
                     desc: 'Questions similar to actual interviews at your target companies'
                   }

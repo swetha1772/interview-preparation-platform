@@ -191,16 +191,19 @@ function AIInterview() {
     const history = JSON.parse(localStorage.getItem('interviewHistory') || '[]');
 
     try {
-      setIsSubmitting(true);
-      const response = await axios.post(
-  "http://127.0.0.1:8000/evaluate-interview",
-  {
-    responses: finalQuestions.map((question, idx) => ({
-      question,
-      answer: finalAnswers[idx] || ""
-    }))
-  }
-);
+  setIsSubmitting(true);
+
+  const API_URL = import.meta.env.VITE_API_URL;
+
+  const response = await axios.post(
+    `${API_URL}/evaluate-interview`,
+    {
+      responses: finalQuestions.map((question, idx) => ({
+        question,
+        answer: finalAnswers[idx] || ""
+      }))
+    }
+  );
 
       const evaluation = response.data?.evaluation || null;
 

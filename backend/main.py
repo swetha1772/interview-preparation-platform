@@ -90,11 +90,9 @@ async def login(
     if not user:
         return {"message": "User not found"}
 
-    if not check_password_hash(
-        user.password,
-        password
-    ):
+    if user.password != password:
         return {"message": "Invalid password"}
+        
 
     return {
         "message": "Login successful",

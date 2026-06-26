@@ -31,10 +31,12 @@ function ResumeUpload() {
       formData.append("interview_type", "general");
       formData.append("company", "");
 
-      const response = await axios.post(
-        "http://127.0.0.1:8000/upload-resume",
-        formData
-      );
+      const API_URL = import.meta.env.VITE_API_URL;
+
+const response = await axios.post(
+  `${API_URL}/upload-resume`,
+  formData
+);
       setResult(response.data);
 
       const rawQuestions = response.data.questions;

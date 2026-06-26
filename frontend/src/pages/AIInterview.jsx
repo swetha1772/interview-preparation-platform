@@ -192,12 +192,15 @@ function AIInterview() {
 
     try {
       setIsSubmitting(true);
-      const response = await axios.post('http://127.0.0.1:8000/evaluate-interview', {
-        responses: finalQuestions.map((question, idx) => ({
-          question,
-          answer: finalAnswers[idx] || ''
-        }))
-      });
+      const response = await axios.post(
+  "http://127.0.0.1:8000/evaluate-interview",
+  {
+    responses: finalQuestions.map((question, idx) => ({
+      question,
+      answer: finalAnswers[idx] || ""
+    }))
+  }
+);
 
       const evaluation = response.data?.evaluation || null;
 

@@ -25,10 +25,12 @@ function Register() {
 
     try {
 
-      const response = await axios.post(
-        "http://127.0.0.1:8000/register",
-        formData
-      );
+      const API_URL = import.meta.env.VITE_API_URL;
+
+const response = await axios.post(
+  `${API_URL}/register`,
+  formData
+);
 
       alert(response.data.message);
 

@@ -16,10 +16,13 @@ function Login() {
     formData.append("password", password);
 
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/login",
-        formData
-      );
+      const API_URL = import.meta.env.VITE_API_URL;
+
+const response = await axios.post(
+  `${API_URL}/login`,
+  formData
+);
+      
 
       if (response.data.message === "Login successful") {
         localStorage.setItem(

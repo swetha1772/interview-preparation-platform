@@ -57,6 +57,13 @@ function AIInterview() {
 
     return () => clearInterval(timer);
   }, []);
+  useEffect(() => {
+  return () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+    }
+  };
+}, []);
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -106,78 +113,98 @@ function AIInterview() {
   };
 
   const handleStartRecording = () => {
-    if (!isSpeechSupported) {
-      alert('Speech recognition is not supported in this browser. Please use a supported browser like Chrome.');
+  if (!isSpeechSupported) {
+    alert("Speech recognition is not supported in this browser.");
+    return;
+  }
+
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  const recognition = new SpeechRecognition();
+
+  recognition.lang = "en-US";
+  recognition.interimResults = true;
+  recognition.continuous = false; // More stable
+  recognition.maxAlternatives = 1;
+
+  recognitionRef.current = recognition;
+
+  recognition.onstart = () => {
+    setRecordingState("listening");
+    setIsRecording(true);
+    setTranscript("");
+    transcriptRef.current = "";
+  };
+
+  recognition.onresult = (event) => {
+    let finalTranscript = "";
+
+    for (let i = 0; i < event.results.length; i++) {
+      finalTranscript += event.results[i][0].transcript + " ";
+    }
+
+    finalTranscript = finalTranscript.trim();
+
+    transcriptRef.current = finalTranscript;
+    setTranscript(finalTranscript);
+  };
+
+  recognition.onerror = (event) => {
+    console.log("Speech Error:", event.error);
+
+    if (
+      event.error === "no-speech" ||
+      event.error === "aborted"
+    ) {
       return;
     }
 
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'en-US';
-    recognition.interimResults = true;
-    recognition.continuous = true;
+    setRecordingState("idle");
+    setIsRecording(false);
+    recognitionRef.current = null;
 
-    recognition.onstart = () => {
-      setRecordingState('listening');
-      setIsRecording(true);
-      setTranscript('');
-      transcriptRef.current = '';
-    };
-
-    recognition.onresult = (event) => {
-      const transcriptText = Array.from(event.results)
-        .map((result) => result[0].transcript)
-        .join(' ');
-
-      transcriptRef.current = transcriptText;
-      setTranscript(transcriptText);
-    };
-
-    recognition.onerror = () => {
-      setRecordingState('idle');
-      setIsRecording(false);
-      alert('Unable to access the microphone or speech recognition failed.');
-    };
-
-    recognition.onend = () => {
-      if (recognitionRef.current) {
-        // Restart listening automatically when the session ends because of a pause.
-        recognitionRef.current.start();
-        return;
-      }
-
-      setRecordingState('processing');
-      setIsRecording(false);
-      const transcriptText = transcriptRef.current.trim();
-      setTranscript(transcriptText);
-      saveAnswer(transcriptText);
-      setRecordingState('idle');
-    };
-
-    recognition.start();
-    recognitionRef.current = recognition;
+    alert("Speech recognition failed. Please try again.");
   };
 
+  recognition.onend = () => {
+    setRecordingState("processing");
+
+    const finalText = transcriptRef.current.trim();
+
+    setTranscript(finalText);
+
+    saveAnswer(finalText);
+
+    setRecordingState("idle");
+    setIsRecording(false);
+
+    recognitionRef.current = null;
+  };
+
+  recognition.start();
+};
   const handleStopRecording = () => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-      recognitionRef.current = null;
-    }
-  };
+  if (recognitionRef.current) {
+    recognitionRef.current.stop();
+  }
+};
 
   const handleNextQuestion = () => {
-    if (currentQuestion < questions.length - 1) {
-      saveAnswer(transcriptRef.current || transcript || allAnswers[currentQuestion] || '');
-      setCurrentQuestion(currentQuestion + 1);
-    }
-  };
+  saveAnswer(transcriptRef.current || transcript);
+
+  if (currentQuestion < questions.length - 1) {
+    setCurrentQuestion((prev) => prev + 1);
+  }
+};
 
   const handlePreviousQuestion = () => {
-    if (currentQuestion > 0) {
-      saveAnswer(transcriptRef.current || transcript || allAnswers[currentQuestion] || '');
-      setCurrentQuestion(currentQuestion - 1);
-    }
-  };
+  saveAnswer(transcriptRef.current || transcript);
+
+  if (currentQuestion > 0) {
+    setCurrentQuestion((prev) => prev - 1);
+  }
+};
 
   const handleSubmitInterview = async () => {
     const finalAnswers = {

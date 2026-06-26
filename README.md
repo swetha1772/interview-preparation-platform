@@ -28,7 +28,7 @@ An AI-powered interview preparation platform that helps users prepare for compan
 - Python
 
 ### AI Services
-- Gemini API
+- Groq API
 
 ### Other Tools
 - pdfplumber

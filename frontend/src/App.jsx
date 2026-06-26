@@ -1,62 +1,35 @@
-import { useState } from "react";
-import axios from "axios";
+import { BrowserRouter, Routes, Route }
+from "react-router-dom";
+
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import ResumeUpload from "./pages/ResumeUpload";
+import InterviewSetup from "./pages/InterviewSetup";
+import AIInterview from "./pages/AIInterview";
+import Report from "./pages/Report";
+import Reports from "./pages/Reports";
+import Settings from "./pages/Settings";
 
 function App() {
-
-  const [file, setFile] = useState(null);
-  const [skills, setSkills] = useState([]);
-
-  const handleUpload = async () => {
-
-    if (!file) {
-      alert("Please upload a resume");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-
-      const response = await axios.post(
-        "http://127.0.0.1:8000/upload-resume",
-        formData
-      );
-
-      setSkills(response.data.skills);
-
-    } catch (error) {
-      console.log(error);
-      alert("Upload failed");
-    }
-  };
-
   return (
-    <div style={{ padding: "40px", fontFamily: "Arial" }}>
+    <BrowserRouter>
 
-      <h1>AI Interview Preparation Platform</h1>
+      <Routes>
 
-      <input
-        type="file"
-        accept=".pdf"
-        onChange={(e) => setFile(e.target.files[0])}
-      />
+        <Route path="/" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/resume-upload" element={<ResumeUpload />} />
+        <Route path="/interview-setup" element={<InterviewSetup />} />
+        <Route path="/interview" element={<AIInterview />} />
+        <Route path="/report" element={<Report />} />
+        <Route path="/reports" element={<Reports />} />
+        <Route path="/settings" element={<Settings />} />
 
-      <br /><br />
+      </Routes>
 
-      <button onClick={handleUpload}>
-        Upload Resume
-      </button>
-
-      <h2>Detected Skills</h2>
-
-      <ul>
-        {skills.map((skill, index) => (
-          <li key={index}>{skill}</li>
-        ))}
-      </ul>
-
-    </div>
+    </BrowserRouter>
   );
 }
 
